@@ -1,9 +1,23 @@
-[![build status](https://secure.travis-ci.org/twitter/typeahead.js.svg?branch=master)](http://travis-ci.org/twitter/typeahead.js)
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
-
-
 [typeahead.js][gh-page]
 =======================
+
+This is a clone of the twitter typeahead.js library. The original author does not see it part of 
+his vision that typeahead is a multi-select type library. Keeping in mind that the typeahead team
+isn't under any obligation to implement user-requested  features, this project was forked to support:
+* @ sign prefix for triggering autocompletion
+* multiple auto-completions per input field
+* 
+
+The original documentation is shown below, it hasn't been updated yet. This project is a fresh fork, 
+and the modified code hasn't been uploaded yet. I'm a js n00b and trying to figure out how to compile 
+the LESS scripts and create minified versions, so bear with me. this should be done in a couple of days.
+
+------
+
+Original content:
+
+[![build status](https://secure.travis-ci.org/twitter/typeahead.js.svg?branch=master)](http://travis-ci.org/twitter/typeahead.js)
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 Inspired by [twitter.com]'s autocomplete search functionality, typeahead.js is 
 a flexible JavaScript library that provides a strong foundation for building 

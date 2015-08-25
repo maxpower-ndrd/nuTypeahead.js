@@ -4,12 +4,12 @@
 This is a clone of the twitter typeahead.js library. The original author does not see it part of 
 his vision that typeahead is a multi-select type library. Keeping in mind that the typeahead team
 isn't under any obligation to implement user-requested  features, this project was forked to support:
-* @ sign prefix for triggering autocompletion
+* @ sign prefix for triggering autocompletion (prefix is configurable).
 * multiple auto-completions per input field
 
 The original documentation is shown below, it hasn't been updated yet. This project is a fresh fork, 
 and the modified code hasn't been uploaded yet. I'm a js n00b and ~~trying to figure out how to compile 
-the LESS scripts and create minified versions, so bear with me~~ just found out this project uses grunt. Grunt/npm installed. initial changes ported into the code. Testing remains. This should be done in a couple of days.
+the LESS scripts and create minified versions, so bear with me~~ just found out this project uses grunt. Grunt/npm installed. Initial changes ported into the code. Testing remains. This should be done in a couple of days.
 
 ------
 

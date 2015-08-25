@@ -1056,7 +1056,7 @@
             this.input.hasFocus() && this.activate();
             this.dir = this.input.getLangDir();
             this.triggers = o.triggers;
-            this.trigger = o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1 ? o.trigger : "#";
+            this.trigger = o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1 ? o.trigger : "@";
             this._hacks();
             this.menu.bind().onSync("selectableClicked", this._onSelectableClicked, this).onSync("asyncRequested", this._onAsyncRequested, this).onSync("asyncCanceled", this._onAsyncCanceled, this).onSync("asyncReceived", this._onAsyncReceived, this).onSync("datasetRendered", this._onDatasetRendered, this).onSync("datasetCleared", this._onDatasetCleared, this);
             onFocused = c(this, "activate", "open", "_onFocused");
@@ -1288,7 +1288,7 @@
             select: function select($selectable) {
                 var data = this.menu.getSelectableData($selectable);
                 if (data && !this.eventBus.before("select", data.obj)) {
-                    this.input.setQuery(this._getWithoutActiveToken() + data.val, true);
+                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val, true);
                     this.eventBus.trigger("select", data.obj);
                     this.close();
                     return true;
@@ -1317,7 +1317,7 @@
                 if (!cancelMove && !this.eventBus.before("cursorchange", payload)) {
                     this.menu.setCursor($candidate);
                     if (data) {
-                        this.input.setInputValue(this._getWithoutActiveToken() + data.val);
+                        this.input.setInputValue(this._getWithoutActiveToken() + this.trigger + data.val);
                     } else {
                         this.input.resetInputValue();
                         this._updateHint();
@@ -1395,7 +1395,8 @@
                         input: input,
                         menu: menu,
                         eventBus: eventBus,
-                        minLength: o.minLength
+                        minLength: o.minLength,
+                        trigger: o.trigger
                     }, www);
                     $input.data(keys.www, www);
                     $input.data(keys.typeahead, typeahead);

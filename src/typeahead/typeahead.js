@@ -48,7 +48,7 @@ var Typeahead = (function() {
 
     this.triggers = o.triggers;
 
-    this.trigger = (o.trigger !== undefined && o.trigger !==null && o.trigger.length === 1 ) ? o.trigger : '#';
+    this.trigger = (o.trigger !== undefined && o.trigger !==null && o.trigger.length === 1 ) ? o.trigger : '@';
 
     this._hacks();
 
@@ -386,7 +386,7 @@ var Typeahead = (function() {
       var data = this.menu.getSelectableData($selectable);
 
       if (data && !this.eventBus.before('select', data.obj)) {
-        this.input.setQuery(this._getWithoutActiveToken() + data.val, true);
+        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val, true);
 
         this.eventBus.trigger('select', data.obj);
         this.close();
@@ -435,7 +435,7 @@ var Typeahead = (function() {
 
         // cursor moved to different selectable
         if (data) {
-          this.input.setInputValue(this._getWithoutActiveToken() + data.val);
+          this.input.setInputValue(this._getWithoutActiveToken() + this.trigger + data.val);
         }
 
         // cursor moved off of selectables, back to input

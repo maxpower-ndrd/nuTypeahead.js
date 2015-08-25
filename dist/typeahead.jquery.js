@@ -1055,6 +1055,8 @@
             this.active = false;
             this.input.hasFocus() && this.activate();
             this.dir = this.input.getLangDir();
+            this.triggers = o.triggers;
+            this.atChar = o.atChar && o.atChar.length === 1 ? o.atChar : "@";
             this._hacks();
             this.menu.bind().onSync("selectableClicked", this._onSelectableClicked, this).onSync("asyncRequested", this._onAsyncRequested, this).onSync("asyncCanceled", this._onAsyncCanceled, this).onSync("asyncReceived", this._onAsyncReceived, this).onSync("datasetRendered", this._onDatasetRendered, this).onSync("datasetCleared", this._onDatasetCleared, this);
             onFocused = c(this, "activate", "open", "_onFocused");
@@ -1216,7 +1218,6 @@
                 }
                 return value;
             },
-            atChar: "@",
             isEnabled: function isEnabled() {
                 return this.enabled;
             },
@@ -1300,7 +1301,7 @@
                 data = this.menu.getSelectableData($selectable);
                 isValid = data && query !== data.val;
                 if (isValid && !this.eventBus.before("autocomplete", data.obj)) {
-                    this.input.setQuery(this._getWithoutActiveToken() + data.val);
+                    this.input.setQuery(this._getWithoutActiveToken() + this.atChar + data.val);
                     this.eventBus.trigger("autocomplete", data.obj);
                     return true;
                 }

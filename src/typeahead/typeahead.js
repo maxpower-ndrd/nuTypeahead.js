@@ -46,6 +46,10 @@ var Typeahead = (function() {
     // detect the initial lang direction
     this.dir = this.input.getLangDir();
 
+    this.triggers = o.triggers;
+
+    this.atChar = (o.atChar && o.atChar.length === 1) ? o.atChar : '@';
+
     this._hacks();
 
     this.menu.bind()
@@ -282,7 +286,6 @@ var Typeahead = (function() {
 
 
     // ### public
-    atChar: '@',
 
     isEnabled: function isEnabled() {
       return this.enabled;
@@ -403,7 +406,7 @@ var Typeahead = (function() {
       isValid = data && query !== data.val;
 
       if (isValid && !this.eventBus.before('autocomplete', data.obj)) {
-        this.input.setQuery(this._getWithoutActiveToken() + data.val);
+        this.input.setQuery(this._getWithoutActiveToken() + this.atChar + data.val);
         this.eventBus.trigger('autocomplete', data.obj);
 
         // return true if autocompletion succeeded

@@ -1962,7 +1962,6 @@
             www.mixin(this);
             this.eventBus = o.eventBus;
             this.minLength = _.isNumber(o.minLength) ? o.minLength : 1;
-            this.atChar = "@";
             this.input = o.input;
             this.menu = o.menu;
             this.enabled = true;
@@ -2130,6 +2129,7 @@
                 }
                 return value;
             },
+            atChar: "@",
             isEnabled: function isEnabled() {
                 return this.enabled;
             },

@@ -1969,7 +1969,7 @@
             this.input.hasFocus() && this.activate();
             this.dir = this.input.getLangDir();
             this.triggers = o.triggers;
-            this.atChar = o.atChar && o.atChar.length === 1 ? o.atChar : "@";
+            this.trigger = o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1 ? o.trigger : "#";
             this._hacks();
             this.menu.bind().onSync("selectableClicked", this._onSelectableClicked, this).onSync("asyncRequested", this._onAsyncRequested, this).onSync("asyncCanceled", this._onAsyncCanceled, this).onSync("asyncReceived", this._onAsyncReceived, this).onSync("datasetRendered", this._onDatasetRendered, this).onSync("datasetCleared", this._onDatasetCleared, this);
             onFocused = c(this, "activate", "open", "_onFocused");
@@ -2115,8 +2115,8 @@
                     var tokens = value.split(" ");
                     var final_token = "";
                     if (tokens.length !== 0) {
-                        if (tokens[tokens.length - 1].substring(0, this.atChar.length) == this.atChar) {
-                            final_token = tokens[tokens.length - 1].substring(this.atChar.length);
+                        if (tokens[tokens.length - 1].substring(0, this.trigger.length) == this.trigger) {
+                            final_token = tokens[tokens.length - 1].substring(this.trigger.length);
                         }
                         return final_token === "" ? null : final_token;
                     }
@@ -2214,7 +2214,7 @@
                 data = this.menu.getSelectableData($selectable);
                 isValid = data && query !== data.val;
                 if (isValid && !this.eventBus.before("autocomplete", data.obj)) {
-                    this.input.setQuery(this._getWithoutActiveToken() + this.atChar + data.val);
+                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val);
                     this.eventBus.trigger("autocomplete", data.obj);
                     return true;
                 }

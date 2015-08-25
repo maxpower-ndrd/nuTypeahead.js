@@ -48,7 +48,7 @@ var Typeahead = (function() {
 
     this.triggers = o.triggers;
 
-    this.atChar = (o.atChar && o.atChar.length === 1) ? o.atChar : '@';
+    this.trigger = (o.trigger !== undefined && o.trigger !==null && o.trigger.length === 1 ) ? o.trigger : '#';
 
     this._hacks();
 
@@ -266,8 +266,8 @@ var Typeahead = (function() {
             var tokens = value.split(' ');
             var final_token='';
             if (tokens.length !== 0) {
-                if (tokens[tokens.length - 1].substring(0, this.atChar.length) == this.atChar){
-                    final_token = tokens[tokens.length - 1].substring(this.atChar.length);
+                if (tokens[tokens.length - 1].substring(0, this.trigger.length) == this.trigger){
+                    final_token = tokens[tokens.length - 1].substring(this.trigger.length);
                 }
                 return (final_token === '') ? null : final_token;
             }
@@ -406,7 +406,7 @@ var Typeahead = (function() {
       isValid = data && query !== data.val;
 
       if (isValid && !this.eventBus.before('autocomplete', data.obj)) {
-        this.input.setQuery(this._getWithoutActiveToken() + this.atChar + data.val);
+        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val);
         this.eventBus.trigger('autocomplete', data.obj);
 
         // return true if autocompletion succeeded

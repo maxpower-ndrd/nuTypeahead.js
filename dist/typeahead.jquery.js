@@ -1112,11 +1112,11 @@
                 this.eventBus.trigger("asyncreceive", query, dataset);
             },
             _onFocused: function onFocused() {
-                this._minLengthMet() && this.menu.update(this.input.getQuery());
+                this._minLengthMet() && this.menu.update(this._getActiveToken());
             },
             _onBlurred: function onBlurred() {
                 if (this.input.hasQueryChangedSinceLastFocus()) {
-                    this.eventBus.trigger("change", this.input.getQuery());
+                    this.eventBus.trigger("change", this._getActiveToken());
                 }
             },
             _onEnterKeyed: function onEnterKeyed(type, $e) {
@@ -1153,7 +1153,7 @@
                 }
             },
             _onQueryChanged: function onQueryChanged(e, query) {
-                this._minLengthMet(query) ? this.menu.update(query) : this.menu.empty();
+                this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
             },
             _onWhitespaceChanged: function onWhitespaceChanged() {
                 this._updateHint();
@@ -1168,8 +1168,14 @@
                 this.isActive() && this.open();
             },
             _minLengthMet: function minLengthMet(query) {
-                query = _.isString(query) ? query : this.input.getQuery() || "";
-                return query.length >= this.minLength;
+                console.log("1 in minlengthmet");
+                var token = this._getActiveToken();
+                console.log("2 token: " + token);
+                if (token == null) {
+                    return false;
+                }
+                console.log("3 returning: " + (token.length - 1 >= this.minLength));
+                return token.length - 1 >= this.minLength;
             },
             _updateHint: function updateHint() {
                 var $selectable, data, val, query, escapedQuery, frontMatchRegEx, match;
@@ -1185,6 +1191,30 @@
                 } else {
                     this.input.clearHint();
                 }
+            },
+            _getActiveToken: function getActiveToken(value) {
+                if (value === null || value === undefined) {
+                    value = this.input.getQuery();
+                }
+                if (value !== null && value !== undefined && value.length > 0) {
+                    var tokens = value.split(" ");
+                    var final_token = "";
+                    if (tokens.length !== 0) {
+                        if (tokens[tokens.length - 1].substring(0, this.atChar.length) == this.atChar) {
+                            final_token = tokens[tokens.length - 1].substring(this.atChar.length);
+                        }
+                        return final_token === "" ? null : final_token;
+                    }
+                }
+                return null;
+            },
+            _getWithoutActiveToken: function getWithoutActiveToken() {
+                var value = this.input.getQuery();
+                var activeToken = this._getActiveToken();
+                if (activeToken && value) {
+                    value = value.substring(0, value.length - activeToken.length - 1);
+                }
+                return value;
             },
             isEnabled: function isEnabled() {
                 return this.enabled;
@@ -1225,7 +1255,13 @@
                 return this.menu.isOpen();
             },
             open: function open() {
+                console.log("in open");
+                console.log("getActiveToken(): " + (this._getActiveToken() == null) ? "null" : "not null");
+                if (this._getActiveToken() == null) {
+                    return;
+                }
                 if (!this.isOpen() && !this.eventBus.before("open")) {
+                    console.log("opening");
                     this.menu.open();
                     this._updateHint();
                     this.eventBus.trigger("open");
@@ -1250,7 +1286,7 @@
             select: function select($selectable) {
                 var data = this.menu.getSelectableData($selectable);
                 if (data && !this.eventBus.before("select", data.obj)) {
-                    this.input.setQuery(data.val, true);
+                    this.input.setQuery(this._getWithoutActiveToken() + data.val, true);
                     this.eventBus.trigger("select", data.obj);
                     this.close();
                     return true;
@@ -1259,11 +1295,11 @@
             },
             autocomplete: function autocomplete($selectable) {
                 var query, data, isValid;
-                query = this.input.getQuery();
+                query = this._getActiveToken();
                 data = this.menu.getSelectableData($selectable);
                 isValid = data && query !== data.val;
                 if (isValid && !this.eventBus.before("autocomplete", data.obj)) {
-                    this.input.setQuery(data.val);
+                    this.input.setQuery(this._getWithoutActiveToken() + data.val);
                     this.eventBus.trigger("autocomplete", data.obj);
                     return true;
                 }
@@ -1271,7 +1307,7 @@
             },
             moveCursor: function moveCursor(delta) {
                 var query, $candidate, data, payload, cancelMove;
-                query = this.input.getQuery();
+                query = this._getActiveToken();
                 $candidate = this.menu.selectableRelativeToCursor(delta);
                 data = this.menu.getSelectableData($candidate);
                 payload = data ? data.obj : null;
@@ -1279,7 +1315,7 @@
                 if (!cancelMove && !this.eventBus.before("cursorchange", payload)) {
                     this.menu.setCursor($candidate);
                     if (data) {
-                        this.input.setInputValue(data.val);
+                        this.input.setInputValue(this._getWithoutActiveToken() + data.val);
                     } else {
                         this.input.resetInputValue();
                         this._updateHint();
@@ -1445,7 +1481,7 @@
                 var query;
                 if (!arguments.length) {
                     ttEach(this.first(), function(t) {
-                        query = t.getVal();
+                        query = this._getActiveToken(t.getVal());
                     });
                     return query;
                 } else {

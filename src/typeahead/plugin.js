@@ -165,7 +165,7 @@
       var query;
 
       if (!arguments.length) {
-        ttEach(this.first(), function(t) { query = t.getVal(); });
+        ttEach(this.first(), function(t) { query = this._getActiveToken(t.getVal()); });
         return query;
       }
 

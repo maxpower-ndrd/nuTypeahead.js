@@ -1,4 +1,4 @@
-/*
+﻿/*
  * typeahead.js
  * https://github.com/twitter/typeahead.js
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
@@ -149,12 +149,12 @@ var Typeahead = (function() {
     },
 
     _onFocused: function onFocused() {
-      this._minLengthMet() && this.menu.update(this.input.getQuery());
+      this._minLengthMet() && this.menu.update(this._getActiveToken());
     },
 
     _onBlurred: function onBlurred() {
       if (this.input.hasQueryChangedSinceLastFocus()) {
-        this.eventBus.trigger('change', this.input.getQuery());
+        this.eventBus.trigger('change', this._getActiveToken());
       }
     },
 
@@ -203,7 +203,7 @@ var Typeahead = (function() {
     },
 
     _onQueryChanged: function onQueryChanged(e, query) {
-      this._minLengthMet(query) ? this.menu.update(query) : this.menu.empty();
+      this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
     },
 
     _onWhitespaceChanged: function onWhitespaceChanged() {
@@ -224,9 +224,12 @@ var Typeahead = (function() {
     },
 
     _minLengthMet: function minLengthMet(query) {
-      query = _.isString(query) ? query : (this.input.getQuery() || '');
-
-      return query.length >= this.minLength;
+        console.log('1 in minlengthmet');
+	var token = this._getActiveToken();
+	console.log('2 token: ' + token);
+	if (token == null){ return false; }
+	console.log('3 returning: '+((token.length-1) >= this.minLength));
+        return (token.length-1) >= this.minLength;
     },
 
     _updateHint: function updateHint() {
@@ -252,6 +255,31 @@ var Typeahead = (function() {
         this.input.clearHint();
       }
     },
+    _getActiveToken: function getActiveToken(value) {
+        if (value === null || value === undefined){ value = this.input.getQuery();
+ }
+        if (value !== null && value !== undefined && value.length > 0) {
+            var tokens = value.split(' ');
+            var final_token='';
+            if (tokens.length !== 0) {
+                if (tokens[tokens.length - 1].substring(0, this.atChar.length) == this.atChar){
+                    final_token = tokens[tokens.length - 1].substring(this.atChar.length);
+                }
+                return (final_token === '') ? null : final_token;
+            }
+        }
+
+        return null;
+    },
+    _getWithoutActiveToken: function getWithoutActiveToken(){
+        var value = this.input.getQuery();
+        var activeToken = this._getActiveToken();
+        if (activeToken && value) {
+            value = value.substring(0, value.length - activeToken.length - 1);
+        }
+        return value;
+    },
+
 
     // ### public
 
@@ -316,7 +344,13 @@ var Typeahead = (function() {
     },
 
     open: function open() {
+      console.log('in open');
+      console.log('getActiveToken(): '+ (this._getActiveToken()==null) ? 'null' : 'not null');
+
+      if (this._getActiveToken() == null){ return; }
+
       if (!this.isOpen() && !this.eventBus.before('open')) {
+        console.log('opening');
         this.menu.open();
         this._updateHint();
         this.eventBus.trigger('open');
@@ -348,7 +382,7 @@ var Typeahead = (function() {
       var data = this.menu.getSelectableData($selectable);
 
       if (data && !this.eventBus.before('select', data.obj)) {
-        this.input.setQuery(data.val, true);
+        this.input.setQuery(this._getWithoutActiveToken() + data.val, true);
 
         this.eventBus.trigger('select', data.obj);
         this.close();
@@ -362,13 +396,13 @@ var Typeahead = (function() {
 
     autocomplete: function autocomplete($selectable) {
       var query, data, isValid;
+      query = this._getActiveToken();
 
-      query = this.input.getQuery();
       data = this.menu.getSelectableData($selectable);
       isValid = data && query !== data.val;
 
       if (isValid && !this.eventBus.before('autocomplete', data.obj)) {
-        this.input.setQuery(data.val);
+        this.input.setQuery(this._getWithoutActiveToken() + data.val);
         this.eventBus.trigger('autocomplete', data.obj);
 
         // return true if autocompletion succeeded
@@ -381,7 +415,9 @@ var Typeahead = (function() {
     moveCursor: function moveCursor(delta) {
       var query, $candidate, data, payload, cancelMove;
 
-      query = this.input.getQuery();
+      
+      query = this._getActiveToken();
+
       $candidate = this.menu.selectableRelativeToCursor(delta);
       data = this.menu.getSelectableData($candidate);
       payload = data ? data.obj : null;
@@ -395,7 +431,7 @@ var Typeahead = (function() {
 
         // cursor moved to different selectable
         if (data) {
-          this.input.setInputValue(data.val);
+          this.input.setInputValue(this._getWithoutActiveToken() + data.val);
         }
 
         // cursor moved off of selectables, back to input

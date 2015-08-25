@@ -34,6 +34,9 @@ var Typeahead = (function() {
     this.eventBus = o.eventBus;
     this.minLength = _.isNumber(o.minLength) ? o.minLength : 1;
 
+    this.atChar = '@';
+
+
     this.input = o.input;
     this.menu = o.menu;
 

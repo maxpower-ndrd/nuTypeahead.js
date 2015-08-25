@@ -8,8 +8,8 @@ isn't under any obligation to implement user-requested  features, this project w
 * multiple auto-completions per input field
 
 The original documentation is shown below, it hasn't been updated yet. This project is a fresh fork, 
-and the modified code hasn't been uploaded yet. I'm a js n00b and trying to figure out how to compile 
-the LESS scripts and create minified versions, so bear with me. this should be done in a couple of days.
+and the modified code hasn't been uploaded yet. I'm a js n00b and ~~trying to figure out how to compile 
+the LESS scripts and create minified versions, so bear with me~~ just found out this project uses grunt. Grunt/npm installed. initial changes ported into the code. Testing remains. This should be done in a couple of days.
 
 ------
 

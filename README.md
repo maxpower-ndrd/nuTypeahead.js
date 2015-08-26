@@ -33,43 +33,43 @@ The following usage shows how to specify a prefix that will trigger autocompleti
 Notes:
 * The following example uses handlebars to compile a client side template.
 * %QUERY is the wildcard. That means typeahead will automatically replace %QUERY with the actual query string
-* 
+
 
 ```
-		var husers = new Bloodhound({
-			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Name'),
-			queryTokenizer: Bloodhound.tokenizers.whitespace,
-			remote: {
-				url: 'http://remoteurl.example.com/api/SearchUsers/%QUERY',
-				wildcard: '%QUERY'
-			}
-		});
+	var husers = new Bloodhound({
+		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Name'),
+		queryTokenizer: Bloodhound.tokenizers.whitespace,
+		remote: {
+			url: 'http://remoteurl.example.com/api/SearchUsers/%QUERY',
+			wildcard: '%QUERY'
+		}
+	});
 
-		$('.typeahead').typeahead({
-			minLength: 1,
-			highlight: true,  // highlight isn't requried for this project
-			trigger: '@'  // can be #, !, or any other char
-		},
-		{
-			name: 'husers',
-			display: 'Name',
-			source: husers,
-			templates: {
-				empty: [
-					'<div class="empty-message">',
-						'No users found by that name',
-					'</div>'
-				].join('\n'),
-				suggestion: Handlebars.compile('<div class="namelookup-popup"><img class="image" src="{{Picture}}" /><div class="content"><div class="text">{{Name}}</div><div class="text"></div></div></div>')
-			}
-		});
-		```
+	$('.typeahead').typeahead({
+		minLength: 1,
+		highlight: true,  // highlight isn't requried for this project
+		trigger: '@'  // can be #, !, or any other char
+	},
+	{
+		name: 'husers',
+		display: 'Name',
+		source: husers,
+		templates: {
+			empty: [
+				'<div class="empty-message">',
+					'No users found by that name',
+				'</div>'
+			].join('\n'),
+			suggestion: Handlebars.compile('<div class="namelookup-popup"><img class="image" src="{{Picture}}" /><div class="content"><div class="text">{{Name}}</div><div class="text"></div></div></div>')
+		}
+	});
+```
 
- Sample output from a service might be of the form shown below. This is all standard typeahead.js stuff.
+Sample output from a service might be of the form shown below. This is all standard typeahead.js stuff.
  
- ```
- [{"ID":"0","Name":"nuser1","Image":"image1.jpg"},{"ID":"1","Name":"nuser2","Image":"image2.jpg"}]
- ```
+```
+[{"ID":"0","Name":"nuser1","Image":"image1.jpg"},{"ID":"1","Name":"nuser2","Image":"image2.jpg"}]
+```
  
 ------
 

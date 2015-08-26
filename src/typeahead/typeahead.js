@@ -228,12 +228,9 @@ var Typeahead = (function() {
     },
 
     _minLengthMet: function minLengthMet(query) {
-        console.log('1 in minlengthmet');
-	var token = this._getActiveToken();
-	console.log('2 token: ' + token);
-	if (token == null){ return false; }
-	console.log('3 returning: '+((token.length-1) >= this.minLength));
-        return (token.length-1) >= this.minLength;
+			var token = this._getActiveToken();
+			if (token == null){ return false; }
+			return token.length >= this.minLength;
     },
 
     _updateHint: function updateHint() {
@@ -259,9 +256,9 @@ var Typeahead = (function() {
         this.input.clearHint();
       }
     },
+		// this will return the token without the trigger
     _getActiveToken: function getActiveToken(value) {
-        if (value === null || value === undefined){ value = this.input.getQuery();
- }
+        if (value === null || value === undefined){ value = this.input.getQuery(); }
         if (value !== null && value !== undefined && value.length > 0) {
             var tokens = value.split(' ');
             var final_token='';
@@ -275,6 +272,7 @@ var Typeahead = (function() {
 
         return null;
     },
+		// this will return the existing text minus the active token and the trigger
     _getWithoutActiveToken: function getWithoutActiveToken(){
         var value = this.input.getQuery();
         var activeToken = this._getActiveToken();

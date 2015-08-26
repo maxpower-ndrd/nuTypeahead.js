@@ -1170,14 +1170,11 @@
                 this.isActive() && this.open();
             },
             _minLengthMet: function minLengthMet(query) {
-                console.log("1 in minlengthmet");
                 var token = this._getActiveToken();
-                console.log("2 token: " + token);
                 if (token == null) {
                     return false;
                 }
-                console.log("3 returning: " + (token.length - 1 >= this.minLength));
-                return token.length - 1 >= this.minLength;
+                return token.length >= this.minLength;
             },
             _updateHint: function updateHint() {
                 var $selectable, data, val, query, escapedQuery, frontMatchRegEx, match;

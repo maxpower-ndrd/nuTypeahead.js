@@ -1056,7 +1056,7 @@
             this.input.hasFocus() && this.activate();
             this.dir = this.input.getLangDir();
             this.triggers = o.triggers;
-            this.trigger = o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1 ? o.trigger : "@";
+            this.trigger = o.trigger !== undefined && o.trigger !== null && o.trigger.length <= 1 ? o.trigger : "@";
             this._hacks();
             this.menu.bind().onSync("selectableClicked", this._onSelectableClicked, this).onSync("asyncRequested", this._onAsyncRequested, this).onSync("asyncCanceled", this._onAsyncCanceled, this).onSync("asyncReceived", this._onAsyncReceived, this).onSync("datasetRendered", this._onDatasetRendered, this).onSync("datasetCleared", this._onDatasetCleared, this);
             onFocused = c(this, "activate", "open", "_onFocused");
@@ -1285,7 +1285,8 @@
             select: function select($selectable) {
                 var data = this.menu.getSelectableData($selectable);
                 if (data && !this.eventBus.before("select", data.obj)) {
-                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val, true);
+                    var space = this.trigger.length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
+                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val, true);
                     this.eventBus.trigger("select", data.obj);
                     this.close();
                     return true;
@@ -1298,7 +1299,8 @@
                 data = this.menu.getSelectableData($selectable);
                 isValid = data && query !== data.val;
                 if (isValid && !this.eventBus.before("autocomplete", data.obj)) {
-                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val);
+                    var space = this.trigger.length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
+                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val);
                     this.eventBus.trigger("autocomplete", data.obj);
                     return true;
                 }
@@ -1314,6 +1316,7 @@
                 if (!cancelMove && !this.eventBus.before("cursorchange", payload)) {
                     this.menu.setCursor($candidate);
                     if (data) {
+                        var space = this.trigger.length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
                         this.input.setInputValue(this._getWithoutActiveToken() + this.trigger + data.val);
                     } else {
                         this.input.resetInputValue();

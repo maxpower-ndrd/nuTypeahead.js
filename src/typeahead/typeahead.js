@@ -48,7 +48,9 @@ var Typeahead = (function() {
 
     this.triggers = o.triggers;
 
-    this.trigger = (o.trigger !== undefined && o.trigger !==null && o.trigger.length === 1 ) ? o.trigger : '@';
+    //this.trigger = (o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1) ? o.trigger : '@';
+    // <=1 because it would allow no trigger
+    this.trigger = (o.trigger !== undefined && o.trigger !== null && o.trigger.length <= 1) ? o.trigger : '@';
 
     this._hacks();
 
@@ -384,7 +386,11 @@ var Typeahead = (function() {
       var data = this.menu.getSelectableData($selectable);
 
       if (data && !this.eventBus.before('select', data.obj)) {
-        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val, true);
+        // if the trigger is blank and the input contains text, then add a space. otherwise, the input
+        // will contain "some text <trigger>" so a space isn't needed
+        var space = (this.trigger.length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
+
+        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val, true);
 
         this.eventBus.trigger('select', data.obj);
         this.close();
@@ -404,7 +410,11 @@ var Typeahead = (function() {
       isValid = data && query !== data.val;
 
       if (isValid && !this.eventBus.before('autocomplete', data.obj)) {
-        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + data.val);
+        // if the trigger is blank and the input contains text, then add a space. otherwise, the input
+        // will contain "some text <trigger>" so a space isn't needed
+        var space = (this.trigger.length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
+
+        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val);
         this.eventBus.trigger('autocomplete', data.obj);
 
         // return true if autocompletion succeeded
@@ -433,6 +443,9 @@ var Typeahead = (function() {
 
         // cursor moved to different selectable
         if (data) {
+          // if the trigger is blank and the input contains text, then add a space. otherwise, the input
+          // will contain "some text <trigger>" so a space isn't needed
+          var space = (this.trigger.length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
           this.input.setInputValue(this._getWithoutActiveToken() + this.trigger + data.val);
         }
 

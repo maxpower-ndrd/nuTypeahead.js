@@ -12,6 +12,20 @@ The original documentation is shown below, it hasn't been updated yet. This proj
 and the modified code hasn't been uploaded yet. I'm a js n00b and ~~trying to figure out how to compile 
 the LESS scripts and create minified versions, so bear with me~~ just found out this project uses grunt. Grunt/npm installed. Initial changes ported into the code. Testing remains. This should be done in a couple of days.
 
+Getting nuTypeahead
+-------------------
+
+At the moment, the only way to get this lib is to download the following files:
+* dist/typeahead.bundle.js
+* dist/typeahead.bundle.min.js
+
+The bundle.js is the combined bloodhound and the typeahead.jquery file, so those two files are enough for dev and prod use.
+
+Of course, you download the entire src as zip or git clone it.
+
+Example usage will be added shortly. A very basic working version of this lib is what you'll find in the repo.
+
+ 
 ------
 
 Original content:

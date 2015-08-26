@@ -4,15 +4,15 @@
 This is a clone of the twitter typeahead.js library. The original author does not see it part of the 
 project's vision that typeahead is a multi-select type library. Keeping in mind that the typeahead team
 isn't under any obligation to implement user-requested features, this project was forked to support:
-* @ sign prefix for triggering autocompletion (prefix is configurable).
-* multiple auto-completions per input field
-* possibly support multiple triggers in the same fields (e.g, @ and #)
+* @ sign prefix for triggering autocompletion (prefix is configurable). [DONE]
+* multiple auto-completions per input field [DONE]
+* ~~possibly support multiple triggers in the same fields (e.g, @ and #)~~ [NOTYET]
 
 The original documentation is shown below, it hasn't been updated yet. This project is a fresh fork, 
 and the modified code hasn't been uploaded yet. I'm a js n00b and ~~trying to figure out how to compile 
 the LESS scripts and create minified versions, so bear with me~~ just found out this project uses grunt. Grunt/npm installed. Initial changes ported into the code. Testing remains. This should be done in a couple of days.
 
-Getting nuTypeahead
+Getting nuTypeahead.js
 -------------------
 
 At the moment, the only way to get this lib is to download the following files:
@@ -21,10 +21,55 @@ At the moment, the only way to get this lib is to download the following files:
 
 The bundle.js is the combined bloodhound and the typeahead.jquery file, so those two files are enough for dev and prod use.
 
-Of course, you download the entire src as zip or git clone it.
+Of course, you can download the entire src as zip or git clone it.
 
 Example usage will be added shortly. A very basic working version of this lib is what you'll find in the repo.
 
+Example usage:
+--------------
+
+The following usage shows how to specify a prefix that will trigger autocompletion using remote data.
+
+Notes:
+* The following example uses handlebars to compile a client side template.
+* %QUERY is the wildcard. That means typeahead will automatically replace %QUERY with the actual query string
+* 
+
+```
+		var husers = new Bloodhound({
+			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Name'),
+			queryTokenizer: Bloodhound.tokenizers.whitespace,
+			remote: {
+				url: 'http://remoteurl.example.com/api/SearchUsers/%QUERY',
+				wildcard: '%QUERY'
+			}
+		});
+
+		$('.typeahead').typeahead({
+			minLength: 1,
+			highlight: true,  // highlight isn't requried for this project
+			trigger: '@'  // can be #, !, or any other char
+		},
+		{
+			name: 'husers',
+			display: 'Name',
+			source: husers,
+			templates: {
+				empty: [
+					'<div class="empty-message">',
+						'No users found by that name',
+					'</div>'
+				].join('\n'),
+				suggestion: Handlebars.compile('<div class="namelookup-popup"><img class="image" src="{{Picture}}" /><div class="content"><div class="text">{{Name}}</div><div class="text"></div></div></div>')
+			}
+		});
+		```
+
+ Sample output from a service might be of the form shown below. This is all standard typeahead.js stuff.
+ 
+ ```
+ [{"ID":"0","Name":"nuser1","Image":"image1.jpg"},{"ID":"1","Name":"nuser2","Image":"image2.jpg"}]
+ ```
  
 ------
 

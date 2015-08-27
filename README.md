@@ -9,7 +9,7 @@ isn't under any obligation to implement user-requested features, this project wa
 * ~~possibly support multiple triggers in the same fields (e.g, @ and #)~~ [NOTYET]
 
 The original documentation is still listed below since it has important information. This project is a fresh fork, 
-and the latest code only supports a configurable trigger character and multiple auto completions using that trigger character. Initial testing shows that the lib works as expected. All original test cases by the typeahead.js team pass. The additional of multiple trigger characters will take a better study of the library.
+and the latest code only supports a configurable trigger character and multiple auto completions using that trigger character. Initial testing shows that the lib works as expected. All original test cases by the typeahead.js team pass. The addition of multiple trigger characters will take a better study of the library.
 
 Getting nuTypeahead.js
 -------------------

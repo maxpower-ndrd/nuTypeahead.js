@@ -8,9 +8,8 @@ isn't under any obligation to implement user-requested features, this project wa
 * multiple auto-completions per input field [DONE]
 * ~~possibly support multiple triggers in the same fields (e.g, @ and #)~~ [NOTYET]
 
-The original documentation is shown below, it hasn't been updated yet. This project is a fresh fork, 
-and the modified code hasn't been uploaded yet. I'm a js n00b and ~~trying to figure out how to compile 
-the LESS scripts and create minified versions, so bear with me~~ just found out this project uses grunt. Grunt/npm installed. Initial changes ported into the code. Testing remains. This should be done in a couple of days.
+The original documentation is still listed below since it has important information. This project is a fresh fork, 
+and the latest code only supports a configurable trigger character and multiple auto completions using that trigger character. Initial testing shows that the lib works as expected. All original test cases by the typeahead.js team pass. The additional of multiple trigger characters will take a better study of the library.
 
 Getting nuTypeahead.js
 -------------------
@@ -23,7 +22,12 @@ The bundle.js is the combined bloodhound and the typeahead.jquery file, so those
 
 Of course, you can download the entire src as zip or git clone it.
 
-Example usage will be added shortly. A very basic working version of this lib is what you'll find in the repo.
+Example usage shows how to use a trigger character and a remote data source. The original examples using arrays and other data source shoudl still work.
+
+Important Notes
+---------------
+
+If you set the trigger character to blank (''), each word will trigger an autocomplete.
 
 Example usage:
 --------------

@@ -1706,7 +1706,6 @@
                 this.source(query, sync, async);
                 !syncCalled && sync([]);
                 function sync(suggestions) {
-                    console.log("sync called...");
                     if (syncCalled) {
                         return;
                     }
@@ -2071,17 +2070,11 @@
                 }
             },
             _onQueryChanged: function onQueryChanged(e, query) {
-                console.log("active token: " + this._getActiveToken());
-                console.log("this._minLengthMet(this._getActiveToken()): " + this._minLengthMet(this._getActiveToken()));
                 var trig = this._getActiveTrigger();
                 if (trig === null || trig === undefined) return false;
-                console.log("_onQueryChanged");
                 if (this.menu.datasets !== null && this.menu.datasets.length !== 0) {
-                    console.log("datasets not null or blank");
                     for (var i = 0; i < this.menu.datasets.length; i++) {
-                        console.log("for i: " + i + ", triggerchar: " + this.menu.datasets[i].triggerchar);
                         if (this.menu.datasets[i].triggerchar == trig) {
-                            console.log("they match");
                             this.menu.triggerchar = trig;
                         }
                     }
@@ -2127,7 +2120,6 @@
                 if (value === null) return null;
                 if (this.menu.datasets !== null && this.menu.datasets !== undefined && this.menu.datasets.length !== 0) {
                     for (var i = 0; i < this.menu.datasets.length; i++) {
-                        console.log("this.menu.datasets[i].triggerchar: " + this.menu.datasets[i].triggerchar);
                         if (value.substring(0, 1) === this.menu.datasets[i].triggerchar) return this.menu.datasets[i].triggerchar;
                     }
                 }
@@ -2146,7 +2138,6 @@
                 return null;
             },
             _getActiveToken: function getActiveToken(value) {
-                console.log("active trigger: " + this._getActiveTrigger());
                 if (this._getActiveTrigger() === null) {
                     return null;
                 }
@@ -2200,12 +2191,10 @@
                 return this.menu.isOpen();
             },
             open: function open() {
-                console.log("getActiveToken(): " + (this._getActiveToken() == null) ? "null" : "not null");
                 if (this._getActiveToken() == null) {
                     return;
                 }
                 if (!this.isOpen() && !this.eventBus.before("open")) {
-                    console.log("opening");
                     this.menu.open();
                     this._updateHint();
                     this.eventBus.trigger("open");

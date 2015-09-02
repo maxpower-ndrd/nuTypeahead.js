@@ -251,7 +251,6 @@ var Dataset = (function() {
       !syncCalled && sync([]);
 
       function sync(suggestions) {
-      	console.log('sync called...');
         if (syncCalled) { return; }
 
         syncCalled = true;

@@ -670,6 +670,7 @@
             this.limit = o.limit || 5;
             this.displayFn = getDisplayFn(o.display || o.displayKey);
             this.templates = getTemplates(o.templates, this.displayFn);
+            this.triggerchar = o.triggerchar || "@";
             this.source = o.source.__ttAdapter ? o.source.__ttAdapter() : o.source;
             this.async = _.isUndefined(o.async) ? this.source.length > 2 : !!o.async;
             this._resetLastSuggestion();
@@ -792,6 +793,7 @@
                 this.source(query, sync, async);
                 !syncCalled && sync([]);
                 function sync(suggestions) {
+                    console.log("sync called...");
                     if (syncCalled) {
                         return;
                     }
@@ -861,6 +863,7 @@
             www.mixin(this);
             this.$node = $(o.node);
             this.query = null;
+            this.triggerchar = "";
             this.datasets = _.map(o.datasets, initializeDataset);
             function initializeDataset(oDataset) {
                 var node = that.$node.find(oDataset.node).first();
@@ -962,11 +965,13 @@
                 var isValidUpdate = query !== this.query;
                 if (isValidUpdate) {
                     this.query = query;
-                    _.each(this.datasets, updateDataset);
+                    for (var i = 0; i < this.datasets.length; i++) {
+                        if (this.triggerchar == this.datasets[i].triggerchar) this.datasets[i].update(query); else this.datasets[i].clear();
+                    }
                 }
                 return isValidUpdate;
                 function updateDataset(dataset) {
-                    dataset.update(query);
+                    if (this.triggerchar == dataset.triggerchar) dataset.update(query); else dataset.clear();
                 }
             },
             empty: function empty() {
@@ -1055,8 +1060,6 @@
             this.active = false;
             this.input.hasFocus() && this.activate();
             this.dir = this.input.getLangDir();
-            this.triggers = o.triggers;
-            this.trigger = o.trigger !== undefined && o.trigger !== null && o.trigger.length <= 1 ? o.trigger : "@";
             this._hacks();
             this.menu.bind().onSync("selectableClicked", this._onSelectableClicked, this).onSync("asyncRequested", this._onAsyncRequested, this).onSync("asyncCanceled", this._onAsyncCanceled, this).onSync("asyncReceived", this._onAsyncReceived, this).onSync("datasetRendered", this._onDatasetRendered, this).onSync("datasetCleared", this._onDatasetCleared, this);
             onFocused = c(this, "activate", "open", "_onFocused");
@@ -1155,17 +1158,22 @@
                 }
             },
             _onQueryChanged: function onQueryChanged(e, query) {
+                console.log("active token: " + this._getActiveToken());
+                console.log("this._minLengthMet(this._getActiveToken()): " + this._minLengthMet(this._getActiveToken()));
                 var trig = this._getActiveTrigger();
                 if (trig === null || trig === undefined) return false;
-                if (this.triggers !== null && this.triggers !== undefined && this.triggers.length !== 0) {
-                    for (var i = 0; i < this.triggers.length; i++) {
-                        if (this.triggers[i].char == trig) {
-                            this.trigger = this.triggers[i].char;
-                            console.log("changing this.trigger: " + this.trigger + ", source; " + this.menu.datasets);
+                console.log("_onQueryChanged");
+                if (this.menu.datasets !== null && this.menu.datasets.length !== 0) {
+                    console.log("datasets not null or blank");
+                    for (var i = 0; i < this.menu.datasets.length; i++) {
+                        console.log("for i: " + i + ", triggerchar: " + this.menu.datasets[i].triggerchar);
+                        if (this.menu.datasets[i].triggerchar == trig) {
+                            console.log("they match");
+                            this.menu.triggerchar = trig;
                         }
                     }
                 }
-                this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
+                return this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
             },
             _onWhitespaceChanged: function onWhitespaceChanged() {
                 this._updateHint();
@@ -1204,9 +1212,10 @@
             _getActiveTrigger: function getActiveTrigger() {
                 var value = this._getActiveWord();
                 if (value === null) return null;
-                if (this.triggers !== null && this.triggers.length !== 0) {
-                    for (var i = 0; i < this.triggers.length; i++) {
-                        if (value.substring(0, 1) === this.triggers[i].char) return this.triggers[i].char;
+                if (this.menu.datasets !== null && this.menu.datasets !== undefined && this.menu.datasets.length !== 0) {
+                    for (var i = 0; i < this.menu.datasets.length; i++) {
+                        console.log("this.menu.datasets[i].triggerchar: " + this.menu.datasets[i].triggerchar);
+                        if (value.substring(0, 1) === this.menu.datasets[i].triggerchar) return this.menu.datasets[i].triggerchar;
                     }
                 }
                 return null;
@@ -1224,20 +1233,12 @@
                 return null;
             },
             _getActiveToken: function getActiveToken(value) {
-                if (value === null || value === undefined) {
-                    value = this.input.getQuery();
+                console.log("active trigger: " + this._getActiveTrigger());
+                if (this._getActiveTrigger() === null) {
+                    return null;
                 }
-                if (value !== null && value !== undefined && value.length > 0) {
-                    var tokens = value.split(" ");
-                    var final_token = "";
-                    if (tokens.length !== 0) {
-                        if (tokens[tokens.length - 1].substring(0, this.trigger.length) == this.trigger) {
-                            final_token = tokens[tokens.length - 1].substring(this.trigger.length);
-                        }
-                        return final_token === "" ? null : final_token;
-                    }
-                }
-                return null;
+                var word = this._getActiveWord().substring(1);
+                return word === null || word === undefined || word == "" ? null : word;
             },
             _getWithoutActiveToken: function getWithoutActiveToken() {
                 var value = this.input.getQuery();
@@ -1316,8 +1317,8 @@
             select: function select($selectable) {
                 var data = this.menu.getSelectableData($selectable);
                 if (data && !this.eventBus.before("select", data.obj)) {
-                    var space = this.trigger.length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
-                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val, true);
+                    var space = this._getActiveTrigger().length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
+                    this.input.setQuery(this._getWithoutActiveToken() + this._getActiveTrigger() + space + data.val, true);
                     this.eventBus.trigger("select", data.obj);
                     this.close();
                     return true;
@@ -1330,8 +1331,8 @@
                 data = this.menu.getSelectableData($selectable);
                 isValid = data && query !== data.val;
                 if (isValid && !this.eventBus.before("autocomplete", data.obj)) {
-                    var space = this.trigger.length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
-                    this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val);
+                    var space = this._getActiveTrigger().length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
+                    this.input.setQuery(this._getWithoutActiveToken() + this._getActiveTrigger() + space + data.val);
                     this.eventBus.trigger("autocomplete", data.obj);
                     return true;
                 }
@@ -1347,8 +1348,8 @@
                 if (!cancelMove && !this.eventBus.before("cursorchange", payload)) {
                     this.menu.setCursor($candidate);
                     if (data) {
-                        var space = this.trigger.length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
-                        this.input.setInputValue(this._getWithoutActiveToken() + this.trigger + data.val);
+                        var space = this._getActiveTrigger().length === 0 && this._getWithoutActiveToken() !== "" ? " " : "";
+                        this.input.setInputValue(this._getWithoutActiveToken() + this._getActiveTrigger() + data.val);
                     } else {
                         this.input.resetInputValue();
                         this._updateHint();

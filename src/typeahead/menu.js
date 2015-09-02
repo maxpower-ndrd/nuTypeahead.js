@@ -25,6 +25,10 @@ var Menu = (function() {
 
     // the latest query #update was called with
     this.query = null;
+
+		// added mpn-09022015
+    this.triggerchar = '';
+
     this.datasets = _.map(o.datasets, initializeDataset);
 
     function initializeDataset(oDataset) {
@@ -184,12 +188,15 @@ var Menu = (function() {
       // don't update if the query hasn't changed
       if (isValidUpdate) {
         this.query = query;
-        _.each(this.datasets, updateDataset);
+      	//_.each(this.datasets, updateDataset);
+        for (var i = 0; i < this.datasets.length; i++) {
+        	if (this.triggerchar == this.datasets[i].triggerchar) this.datasets[i].update(query); else this.datasets[i].clear();
+        }
       }
 
       return isValidUpdate;
 
-      function updateDataset(dataset) { dataset.update(query); }
+      function updateDataset(dataset) { if (this.triggerchar == dataset.triggerchar) dataset.update(query); else dataset.clear(); }
     },
 
     empty: function empty() {

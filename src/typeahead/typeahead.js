@@ -46,13 +46,6 @@ var Typeahead = (function() {
     // detect the initial lang direction
     this.dir = this.input.getLangDir();
 
-  	// set the triggers array
-    this.triggers = o.triggers;
-
-    //this.trigger = (o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1) ? o.trigger : '@';
-    // <=1 because it would allow no trigger
-    this.trigger = (o.trigger !== undefined && o.trigger !== null && o.trigger.length <= 1) ? o.trigger : '@';
-
     this._hacks();
 
     this.menu.bind()
@@ -210,22 +203,29 @@ var Typeahead = (function() {
     },
 
     _onQueryChanged: function onQueryChanged(e, query) {
+    	console.log('active token: ' + this._getActiveToken());
+    	console.log('this._minLengthMet(this._getActiveToken()): ' + this._minLengthMet(this._getActiveToken()));
+
     	var trig = this._getActiveTrigger();
     	if (trig === null || trig === undefined) return false;
 
-    	if (this.triggers !== null && this.triggers !== undefined && this.triggers.length !== 0) {
-    		for (var i=0; i < this.triggers.length; i++) {
-    			if (this.triggers[i].char == trig) {  // if the trigger matches, change the source
-    				this.trigger = this.triggers[i].char;
-    				// this.source = this.triggers[i].source;
-    				// this.menu.datasets = this.triggers[i].source;
-						// marker
-    				console.log('changing this.trigger: ' + this.trigger + ', source; ' + this.menu.datasets);
+    	console.log('_onQueryChanged');
+    	if (this.menu.datasets !== null && this.menu.datasets.length !== 0) {
+    		console.log('datasets not null or blank');
+    		for (var i = 0; i < this.menu.datasets.length; i++) {
+    			console.log('for i: ' + i + ', triggerchar: ' + this.menu.datasets[i].triggerchar);
+    			if (this.menu.datasets[i].triggerchar == trig) {
+    				console.log('they match');
+    				this.menu.triggerchar = trig;
     			}
-				}
+    		}
     	}
 
-    	this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
+    	// this.menu.update(this._getActiveToken);
+    	return this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
+    	//     	return this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
+
+    	//this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
     },
 
     _onWhitespaceChanged: function onWhitespaceChanged() {
@@ -274,27 +274,27 @@ var Typeahead = (function() {
         this.input.clearHint();
       }
     },
-  	// this will return the active trigger, if one found based on triggers array
+  	// this will return the active trigger, if one found based on datasets array
     _getActiveTrigger: function getActiveTrigger() {
     	var value = this._getActiveWord();
     	if (value === null) return null;
 
     	// if the first character of the active word matches a trigger character from triggers array, return it
-    	if (this.triggers !== null && this.triggers.length !== 0) {
-    		for (var i = 0; i < this.triggers.length; i++) {
-    			if (value.substring(0, 1) === this.triggers[i].char)
-    				return this.triggers[i].char;
+    	if (this.menu.datasets !== null && this.menu.datasets !== undefined && this.menu.datasets.length !== 0) {
+    		for (var i = 0; i < this.menu.datasets.length; i++) {
+    			console.log('this.menu.datasets[i].triggerchar: ' + this.menu.datasets[i].triggerchar);
+    			if (value.substring(0, 1) === this.menu.datasets[i].triggerchar)
+    				return this.menu.datasets[i].triggerchar;
     		}
     	}
 
     	return null;
     },
-  	// this will return the active word with the token
+  	// this will return the active word. "this is a token" would return "token"
     _getActiveWord: function getActiveWord(value){
     	if (value === null || value === undefined) { value = this.input.getQuery(); }
     	if (value !== null && value !== undefined && value.length > 0) {
     		var tokens = value.split(' ');
-    		// var final_token = '';
     		if (tokens.length !== 0) {
     			return tokens[tokens.length - 1];
     		}
@@ -304,19 +304,14 @@ var Typeahead = (function() {
     },
 		//  this will return the token without the trigger
     _getActiveToken: function getActiveToken(value) {
-        if (value === null || value === undefined){ value = this.input.getQuery(); }
-        if (value !== null && value !== undefined && value.length > 0) {
-            var tokens = value.split(' ');
-            var final_token='';
-            if (tokens.length !== 0) {
-                if (tokens[tokens.length - 1].substring(0, this.trigger.length) == this.trigger){
-                    final_token = tokens[tokens.length - 1].substring(this.trigger.length);
-                }
-                return (final_token === '') ? null : final_token;
-            }
-        }
+    	console.log('active trigger: ' + this._getActiveTrigger());
+			if (this._getActiveTrigger() === null) {
+    		return null;  // if there is no active trigger, there is no token
+    	}
 
-        return null;
+			// if there's a token, strip it and return word
+    	var word=this._getActiveWord().substring(1);
+    	return (word===null || word===undefined || word=='') ? null : word;
     },
 		// this will return the existing text minus the active token and the trigger
     _getWithoutActiveToken: function getWithoutActiveToken(){
@@ -430,10 +425,11 @@ var Typeahead = (function() {
 
       if (data && !this.eventBus.before('select', data.obj)) {
         // if the trigger is blank and the input contains text, then add a space. otherwise, the input
-        // will contain "some text <trigger>" so a space isn't needed
-        var space = (this.trigger.length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
+      	// will contain "some text <trigger>" so a space isn't needed
+				// marker todo
+      	var space = (this._getActiveTrigger().length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
 
-        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val, true);
+        this.input.setQuery(this._getWithoutActiveToken() + this._getActiveTrigger() + space + data.val, true);
 
         this.eventBus.trigger('select', data.obj);
         this.close();
@@ -455,9 +451,9 @@ var Typeahead = (function() {
       if (isValid && !this.eventBus.before('autocomplete', data.obj)) {
         // if the trigger is blank and the input contains text, then add a space. otherwise, the input
         // will contain "some text <trigger>" so a space isn't needed
-        var space = (this.trigger.length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
+      	var space = (this._getActiveTrigger().length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
 
-        this.input.setQuery(this._getWithoutActiveToken() + this.trigger + space + data.val);
+      	this.input.setQuery(this._getWithoutActiveToken() + this._getActiveTrigger() + space + data.val);
         this.eventBus.trigger('autocomplete', data.obj);
 
         // return true if autocompletion succeeded
@@ -488,8 +484,8 @@ var Typeahead = (function() {
         if (data) {
           // if the trigger is blank and the input contains text, then add a space. otherwise, the input
           // will contain "some text <trigger>" so a space isn't needed
-          var space = (this.trigger.length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
-          this.input.setInputValue(this._getWithoutActiveToken() + this.trigger + data.val);
+        	var space = (this._getActiveTrigger().length === 0 && this._getWithoutActiveToken() !== '') ? ' ' : '';
+        	this.input.setInputValue(this._getWithoutActiveToken() + this._getActiveTrigger() + data.val);
         }
 
         // cursor moved off of selectables, back to input

@@ -1,6 +1,8 @@
 [nuTypeahead.js][gh-page]
 =======================
 
+NOTE: AS OF LAST GIT PUSH, THE LIB IS NOT IN A STABLE CONDITION. 3cea5b8 IS THE LAST KNOWN WORKING COMMIT.
+
 This is a clone of the twitter typeahead.js library. The original author does not see it part of the 
 project's vision that typeahead is a multi-select type library. Keeping in mind that the typeahead team
 isn't under any obligation to implement user-requested features, this project was forked to support:

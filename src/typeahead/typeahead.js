@@ -272,7 +272,7 @@ var Typeahead = (function() {
     	var value = this._getActiveWord();
     	if (value === null) return null;
 
-    	// if the first character of the active word matches a trigger character from triggers array, return it
+    	// if the first character of the active word matches a trigger character from a dataset, return it
     	if (this.menu.datasets !== null && this.menu.datasets !== undefined && this.menu.datasets.length !== 0) {
     		for (var i = 0; i < this.menu.datasets.length; i++) {
     			if (value.substring(0, 1) === this.menu.datasets[i].triggerchar)

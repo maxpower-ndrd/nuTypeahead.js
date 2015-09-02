@@ -965,12 +965,20 @@
                 if (isValidUpdate) {
                     this.query = query;
                     for (var i = 0; i < this.datasets.length; i++) {
-                        if (this.triggerchar == this.datasets[i].triggerchar) this.datasets[i].update(query); else this.datasets[i].clear();
+                        if (this.triggerchar == this.datasets[i].triggerchar) {
+                            this.datasets[i].update(query);
+                        } else {
+                            this.datasets[i].clear();
+                        }
                     }
                 }
                 return isValidUpdate;
                 function updateDataset(dataset) {
-                    if (this.triggerchar == dataset.triggerchar) dataset.update(query); else dataset.clear();
+                    if (this.triggerchar == dataset.triggerchar) {
+                        dataset.update(query);
+                    } else {
+                        dataset.clear();
+                    }
                 }
             },
             empty: function empty() {
@@ -1158,7 +1166,9 @@
             },
             _onQueryChanged: function onQueryChanged(e, query) {
                 var trig = this._getActiveTrigger();
-                if (trig === null || trig === undefined) return false;
+                if (trig === null || trig === undefined) {
+                    return false;
+                }
                 if (this.menu.datasets !== null && this.menu.datasets.length !== 0) {
                     for (var i = 0; i < this.menu.datasets.length; i++) {
                         if (this.menu.datasets[i].triggerchar == trig) {
@@ -1204,10 +1214,14 @@
             },
             _getActiveTrigger: function getActiveTrigger() {
                 var value = this._getActiveWord();
-                if (value === null) return null;
+                if (value === null) {
+                    return null;
+                }
                 if (this.menu.datasets !== null && this.menu.datasets !== undefined && this.menu.datasets.length !== 0) {
                     for (var i = 0; i < this.menu.datasets.length; i++) {
-                        if (value.substring(0, 1) === this.menu.datasets[i].triggerchar) return this.menu.datasets[i].triggerchar;
+                        if (value.substring(0, 1) === this.menu.datasets[i].triggerchar || this.menu.datasets[i].triggerchar == "") {
+                            return this.menu.datasets[i].triggerchar;
+                        }
                     }
                 }
                 return null;
@@ -1416,9 +1430,7 @@
                         input: input,
                         menu: menu,
                         eventBus: eventBus,
-                        minLength: o.minLength,
-                        trigger: o.trigger,
-                        triggers: o.triggers
+                        minLength: o.minLength
                     }, www);
                     $input.data(keys.www, www);
                     $input.data(keys.typeahead, typeahead);

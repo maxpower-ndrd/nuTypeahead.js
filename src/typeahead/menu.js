@@ -188,15 +188,15 @@ var Menu = (function() {
       // don't update if the query hasn't changed
       if (isValidUpdate) {
         this.query = query;
-      	//_.each(this.datasets, updateDataset);
+        //_.each(this.datasets, updateDataset);
         for (var i = 0; i < this.datasets.length; i++) {
-        	if (this.triggerchar == this.datasets[i].triggerchar) this.datasets[i].update(query); else this.datasets[i].clear();
+          if (this.triggerchar == this.datasets[i].triggerchar) { this.datasets[i].update(query); } else { this.datasets[i].clear(); }
         }
       }
 
       return isValidUpdate;
 
-      function updateDataset(dataset) { if (this.triggerchar == dataset.triggerchar) dataset.update(query); else dataset.clear(); }
+      function updateDataset(dataset) { if (this.triggerchar == dataset.triggerchar) { dataset.update(query); } else { dataset.clear(); } }
     },
 
     empty: function empty() {

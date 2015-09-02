@@ -1155,6 +1155,16 @@
                 }
             },
             _onQueryChanged: function onQueryChanged(e, query) {
+                var trig = this._getActiveTrigger();
+                if (trig === null || trig === undefined) return false;
+                if (this.triggers !== null && this.triggers !== undefined && this.triggers.length !== 0) {
+                    for (var i = 0; i < this.triggers.length; i++) {
+                        if (this.triggers[i].char == trig) {
+                            this.trigger = this.triggers[i].char;
+                            console.log("changing this.trigger: " + this.trigger + ", source; " + this.menu.datasets);
+                        }
+                    }
+                }
                 this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
             },
             _onWhitespaceChanged: function onWhitespaceChanged() {
@@ -1190,6 +1200,28 @@
                 } else {
                     this.input.clearHint();
                 }
+            },
+            _getActiveTrigger: function getActiveTrigger() {
+                var value = this._getActiveWord();
+                if (value === null) return null;
+                if (this.triggers !== null && this.triggers.length !== 0) {
+                    for (var i = 0; i < this.triggers.length; i++) {
+                        if (value.substring(0, 1) === this.triggers[i].char) return this.triggers[i].char;
+                    }
+                }
+                return null;
+            },
+            _getActiveWord: function getActiveWord(value) {
+                if (value === null || value === undefined) {
+                    value = this.input.getQuery();
+                }
+                if (value !== null && value !== undefined && value.length > 0) {
+                    var tokens = value.split(" ");
+                    if (tokens.length !== 0) {
+                        return tokens[tokens.length - 1];
+                    }
+                }
+                return null;
             },
             _getActiveToken: function getActiveToken(value) {
                 if (value === null || value === undefined) {
@@ -1254,7 +1286,6 @@
                 return this.menu.isOpen();
             },
             open: function open() {
-                console.log("in open");
                 console.log("getActiveToken(): " + (this._getActiveToken() == null) ? "null" : "not null");
                 if (this._getActiveToken() == null) {
                     return;
@@ -1396,7 +1427,8 @@
                         menu: menu,
                         eventBus: eventBus,
                         minLength: o.minLength,
-                        trigger: o.trigger
+                        trigger: o.trigger,
+                        triggers: o.triggers
                     }, www);
                     $input.data(keys.www, www);
                     $input.data(keys.typeahead, typeahead);

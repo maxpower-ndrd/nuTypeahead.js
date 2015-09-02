@@ -80,7 +80,8 @@
           menu: menu,
           eventBus: eventBus,
           minLength: o.minLength,
-          trigger: o.trigger
+          trigger: o.trigger,
+          triggers: o.triggers
         }, www);
 
         $input.data(keys.www, www);

@@ -46,6 +46,7 @@ var Typeahead = (function() {
     // detect the initial lang direction
     this.dir = this.input.getLangDir();
 
+  	// set the triggers array
     this.triggers = o.triggers;
 
     //this.trigger = (o.trigger !== undefined && o.trigger !== null && o.trigger.length === 1) ? o.trigger : '@';
@@ -209,7 +210,22 @@ var Typeahead = (function() {
     },
 
     _onQueryChanged: function onQueryChanged(e, query) {
-      this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
+    	var trig = this._getActiveTrigger();
+    	if (trig === null || trig === undefined) return false;
+
+    	if (this.triggers !== null && this.triggers !== undefined && this.triggers.length !== 0) {
+    		for (var i=0; i < this.triggers.length; i++) {
+    			if (this.triggers[i].char == trig) {  // if the trigger matches, change the source
+    				this.trigger = this.triggers[i].char;
+    				// this.source = this.triggers[i].source;
+    				// this.menu.datasets = this.triggers[i].source;
+						// marker
+    				console.log('changing this.trigger: ' + this.trigger + ', source; ' + this.menu.datasets);
+    			}
+				}
+    	}
+
+    	this._minLengthMet(this._getActiveToken()) ? this.menu.update(this._getActiveToken()) : this.menu.empty();
     },
 
     _onWhitespaceChanged: function onWhitespaceChanged() {
@@ -258,7 +274,35 @@ var Typeahead = (function() {
         this.input.clearHint();
       }
     },
-		// this will return the token without the trigger
+  	// this will return the active trigger, if one found based on triggers array
+    _getActiveTrigger: function getActiveTrigger() {
+    	var value = this._getActiveWord();
+    	if (value === null) return null;
+
+    	// if the first character of the active word matches a trigger character from triggers array, return it
+    	if (this.triggers !== null && this.triggers.length !== 0) {
+    		for (var i = 0; i < this.triggers.length; i++) {
+    			if (value.substring(0, 1) === this.triggers[i].char)
+    				return this.triggers[i].char;
+    		}
+    	}
+
+    	return null;
+    },
+  	// this will return the active word with the token
+    _getActiveWord: function getActiveWord(value){
+    	if (value === null || value === undefined) { value = this.input.getQuery(); }
+    	if (value !== null && value !== undefined && value.length > 0) {
+    		var tokens = value.split(' ');
+    		// var final_token = '';
+    		if (tokens.length !== 0) {
+    			return tokens[tokens.length - 1];
+    		}
+    	}
+
+    	return null;
+    },
+		//  this will return the token without the trigger
     _getActiveToken: function getActiveToken(value) {
         if (value === null || value === undefined){ value = this.input.getQuery(); }
         if (value !== null && value !== undefined && value.length > 0) {
@@ -348,7 +392,6 @@ var Typeahead = (function() {
     },
 
     open: function open() {
-      console.log('in open');
       console.log('getActiveToken(): '+ (this._getActiveToken()==null) ? 'null' : 'not null');
 
       if (this._getActiveToken() == null){ return; }

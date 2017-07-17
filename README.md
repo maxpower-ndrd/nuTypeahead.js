@@ -24,7 +24,7 @@ The bundle.js is the combined bloodhound and the typeahead.jquery file, so those
 
 Of course, you can download the entire src as zip or git clone it.
 
-Example usage shows how to use a trigger character and a remote data source. The original examples using arrays and other data source shoudl still work.
+Example usage shows how to use a trigger character and a remote data source. The original examples using arrays and other data source should still work.
 
 Important Notes
 ---------------
